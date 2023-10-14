@@ -329,7 +329,7 @@ bool SetUpNonAbUpdateCommands(const std::string& package, ZipArchiveHandle zip, 
   static constexpr const char* UPDATE_BINARY_NAME = "META-INF/com/google/android/update-binary";
   ZipEntry64 binary_entry;
   if (FindEntry(zip, UPDATE_BINARY_NAME, &binary_entry) != 0) {
-    LOG(ERROR) << "Failed to find update binary " << UPDATE_BINARY_NAME;
+    LOG(WARNING) << "Failed to find update binary " << UPDATE_BINARY_NAME << ". Trying to flash it as A/B update package...";
     return false;
   }
 
@@ -487,11 +487,13 @@ static InstallResult TryUpdateBinary(Package* package, bool* wipe_cache,
   std::string package_path = package->GetPath();
 
   std::vector<std::string> args;
-  if (auto setup_result =
-          package_is_ab
-              ? SetUpAbUpdateCommands(package_path, zip, pipe_write.get(), &args)
-              : SetUpNonAbUpdateCommands(package_path, zip, retry_count, pipe_write.get(), &args);
-      !setup_result) {
+  bool setup_result = false; 
+  if (SetUpNonAbUpdateCommands(package_path, zip, retry_count, pipe_write.get(), &args)) {
+    setup_result = true;
+  } else {
+    setup_result = SetUpAbUpdateCommands(package_path, zip, pipe_write.get(), &args);
+  }
+  if (!setup_result) {
     log_buffer->push_back(android::base::StringPrintf("error: %d", kUpdateBinaryCommandFailure));
     return INSTALL_CORRUPT;
   }
