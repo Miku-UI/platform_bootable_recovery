@@ -245,7 +245,7 @@ static InstallResult apply_update_menu(Device* device, Device::BuiltinAction* re
   return status;
 }
 
-static bool ask_to_cancel_ota(Device* device) {
+bool ask_to_cancel_ota(Device* device) {
   // clang-format off
   std::vector<std::string> headers{
     "Overwrite in-progress update?",
@@ -571,13 +571,6 @@ change_menu:
       case Device::APPLY_ADB_SIDELOAD:
       case Device::ENTER_RESCUE: {
         save_current_log = true;
-
-        if (!IsCancelUpdateSafe(device)) {
-          if (!ask_to_cancel_ota(device)) {
-            break;
-          }
-        }
-
         update_in_progress = true;
         WriteUpdateInProgress();
 
