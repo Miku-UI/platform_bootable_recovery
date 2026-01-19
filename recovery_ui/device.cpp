@@ -84,16 +84,6 @@ void Device::ResetUI(RecoveryUI* ui) {
   ui_.reset(ui);
 }
 
-void Device::RemoveMenuItemForAction(Device::BuiltinAction action) {
-  g_menu_actions.erase(
-      std::remove_if(g_menu_actions.begin(), g_menu_actions.end(),
-                     [action](const auto& entry) { return entry.second == action; }));
-  CHECK(!g_menu_actions.empty());
-
-  // Re-populate the menu items.
-  PopulateMenuItems();
-}
-
 static void RemoveMenuItemForAction(std::vector<menu_action_t>& menu, Device::BuiltinAction action) {
   menu.erase(
       std::remove_if(menu.begin(), menu.end(),
