@@ -574,7 +574,6 @@ change_menu:
         update_in_progress = true;
         WriteUpdateInProgress();
 
-        bool adb = true;
         Device::BuiltinAction reboot_action{};
         if (chosen_action == Device::ENTER_RESCUE) {
           // Switch to graphics screen.
